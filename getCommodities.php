@@ -1,22 +1,17 @@
 <?php
-$servername = "localhost";
-$username = "your_db_username";
-$password = "your_db_password";
-$dbname = "your_db_name";
+$servername = "192.168.1.29:3221";
+$username = "root";
+$password = "root";
+$dbname = "Assesment2";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+try {
+   $conn = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8", $username, $password);
+   $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+   $stmt = $conn->query("SELECT * FROM commodities");
+   $commodities = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+   echo json_encode($commodities);
+} catch (PDOException $e) {
+   echo "Connection failed: " . $e->getMessage();
 }
-
-$sql = "SELECT * FROM commodities";
-$result = $conn->query($sql);
-
-$commodities = array();
-while($row = $result->fetch_assoc()) {
-    $commodities[] = $row;
-}
-
-echo json_encode($commodities);
-$conn->close();
-?>
