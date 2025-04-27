@@ -1,8 +1,19 @@
 <?php
-$apiKey = "YOUR_ALPHAVANTAGE_API_KEY";
-$symbol = $_GET['symbol'];
+$apiKey = "demo";
+$symbol = isset($_GET['symbol']) ? $_GET['symbol'] : '';
 
-$url = "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={$symbol}&apikey={$apiKey}";
-$response = file_get_contents($url);
+if (!$symbol) {
+   echo json_encode(["error" => "No symbol provided"]);
+   exit;
+}
 
-echo $response;
+$url = "https://www.alphavantage.co/query?function=" . urlencode($symbol) . "&interval=monthly" . "&apikey=" . urlencode($apiKey);
+
+// Use file_get_contents OR cURL (I'll give a safe file_get_contents version)
+$response = @file_get_contents($url);
+
+if ($response === FALSE) {
+   echo json_encode(["error" => "Failed to fetch data"]);
+} else {
+   echo $response;
+}
